@@ -1,0 +1,73 @@
+@model HotelTool.Web.Models.DataViewModel
+@{
+    ViewData["Title"] = "Hotel Data";
+}
+
+
+<div class="page-header">
+    <h1>📊 Hotel Data</h1>
+    <p>
+        View and explore validated hotel data.
+        @if (Model.SourceFile != null)
+        {
+            <span class="source-badge">Source: @Model.SourceFile</span>
+        }
+    </p>
+</div>
+
+@if (!Model.HasData)
+{
+    <div class="empty-state">
+        <div class="icon">📭</div>
+        <h3>No Data Available</h3>
+        <p>Upload a CSV file first to see hotel data here.</p>
+        <a href="@Url.Action("Upload", "Hotel")" class="btn btn-primary" style="margin-top: 1rem;">📤 Upload CSV</a>
+    </div>
+}
+else
+{
+    <form method="get" asp-action="Data" class="controls">
+        <div class="control-group">
+            <label>Sort by:</label>
+            <select name="sortBy">
+                <option value="">Default</option>
+                <option value="name" selected="@(Model.SortBy == "name")">Name (A-Z)</option>
+                <option value="stars" selected="@(Model.SortBy == "stars")">Stars (High → Low)</option>
+                <option value="stars_asc" selected="@(Model.SortBy == "stars_asc")">Stars (Low → High)</option>
+                <option value="address" selected="@(Model.SortBy == "address")">Address (A-Z)</option>
+            </select>
+        </div>
+
+        <div class="control-group">
+            <label>Group by:</label>
+            <select name="groupBy">
+                <option value="">None</option>
+                <option value="stars" selected="@(Model.GroupBy == "stars")">Stars</option>
+                <option value="country" selected="@(Model.GroupBy == "country")">Country</option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary">🔄 Apply</button>
+        <a href="@Url.Action("Data", "Hotel")" class="btn btn-ghost">↺ Reset</a>
+    </form>
+
+    @if (Model.GroupedHotels != null)
+    {
+        @foreach (var group in Model.GroupedHotels)
+        {
+            <div class="group-header">
+                <div class="group-title">
+                    <span>@group.Key</span>
+                    <span class="group-count">@group.Value.Count hotels</span>
+                </div>
+                @await Html.PartialAsync("_HotelTable", group.Value)
+            </div>
+        }
+    }
+    else
+    {
+        <div class="hotel-table-wrapper">
+            @await Html.PartialAsync("_HotelTable", Model.Hotels)
+        </div>
+    }
+}

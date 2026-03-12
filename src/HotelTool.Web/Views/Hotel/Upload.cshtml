@@ -1,0 +1,101 @@
+@model HotelTool.Web.Models.UploadViewModel
+@{
+    ViewData["Title"] = "Upload CSV";
+}
+
+<div class="page-header">
+    <h1>📤 Upload Hotel CSV</h1>
+    <p>Upload your CSV file to validate hotel data and export in JSON & XML formats.</p>
+</div>
+
+@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+{
+    <div class="alert alert-error">⚠️ @Model.ErrorMessage</div>
+}
+
+@if (Model.HasResult)
+{
+    <div class="alert alert-success">✅ File processed successfully!</div>
+
+    <div class="result-grid">
+        <div class="stat-card success">
+            <div class="number">@Model.ValidCount</div>
+            <div class="label">Valid Hotels</div>
+        </div>
+        <div class="stat-card danger">
+            <div class="number">@Model.InvalidCount</div>
+            <div class="label">Invalid Entries</div>
+        </div>
+        <div class="stat-card info">
+            <div class="number">@Model.OutputFiles.Count</div>
+            <div class="label">Files Generated</div>
+        </div>
+    </div>
+
+    @if (Model.OutputFiles.Any())
+    {
+        <div class="output-files">
+            <h3>📁 Generated Output Files</h3>
+            @foreach (var file in Model.OutputFiles)
+            {
+                <span class="file-badge">📄 @file</span>
+            }
+        </div>
+    }
+
+    @if (Model.InvalidEntries.Any())
+    {
+        <div class="invalid-table">
+            <h3>❌ Invalid Entries (@Model.InvalidEntries.Count)</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Line</th>
+                        <th>Data</th>
+                        <th>Errors</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var entry in Model.InvalidEntries.Take(50))
+                    {
+                        <tr>
+                            <td>@entry.LineNumber</td>
+                            <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">@entry.RawData</td>
+                            <td>
+                                @foreach (var error in entry.Errors)
+                                {
+                                    <span class="error-tag">@error</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+
+    <div style="margin-top: 1.5rem; display: flex; gap: 1rem;">
+        <a href="@Url.Action("Data", "Hotel")" class="btn btn-primary">📊 View Valid Data</a>
+        <a href="@Url.Action("Upload", "Hotel")" class="btn btn-outline">📤 Upload Another</a>
+    </div>
+}
+else
+{
+    <form asp-controller="Hotel" asp-action="Upload" method="post" enctype="multipart/form-data">
+        <div class="upload-card">
+            <div class="upload-icon">📁</div>
+            <h3>Select your CSV file</h3>
+            <p>Choose a hotels.csv file to validate and export</p>
+            <div style="margin: 1.5rem 0;">
+                <input type="file" name="csvFile" accept=".csv" id="fileInput"
+                       style="background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 0.5rem; font-family: 'Inter', sans-serif;" />
+            </div>
+            <button type="submit" class="btn btn-primary">
+                🚀 Process File
+            </button>
+        </div>
+    </form>
+}
+
+
+

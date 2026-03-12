@@ -1,0 +1,41 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - HotelTool</title>
+    <meta name="description" content="Hotel data management tool - Upload, validate, and visualize hotel CSV data" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/site.css" />
+    @RenderSection("Styles", required: false)
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-inner">
+            <a class="navbar-brand" href="/">
+                🏨 HotelTool
+            </a>
+            <div class="nav-links">
+                <a href="@Url.Action("Upload", "Hotel")"
+                   class="@(ViewContext.RouteData.Values["action"]?.ToString() == "Upload" ? "active" : "")">
+                    📤 Upload
+                </a>
+                <a href="@Url.Action("Data", "Hotel")"
+                   class="@(ViewContext.RouteData.Values["action"]?.ToString() == "Data" ? "active" : "")">
+                    📊 Data
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container">
+        @RenderBody()
+    </main>
+
+    <footer class="footer">
+        <p>&copy; @DateTime.Now.Year HotelTool — Hotel Data Management</p>
+    </footer>
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html>
